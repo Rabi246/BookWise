@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/BookWise.iml" filepath="$PROJECT_DIR$/.idea/BookWise.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BookWise/BookWise.iml" filepath="$PROJECT_DIR$/BookWise/BookWise.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Bookwise.iml" filepath="$PROJECT_DIR$/.idea/modules/Bookwise.iml" />
     </modules>
   </component>
 </project>
