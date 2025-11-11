@@ -1,51 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Create Account</title>
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <title>Create Account | BookWise</title>
+
+    <!-- ✅ Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- ✅ Your CSS file -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- ✅ Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 
-<body class="d-flex justify-content-center align-items-center"
-      style="height:100vh; background:#f4f8ff">
+<body>
 
-<div class="p-4 bg-white shadow rounded" style="width:350px;">
-    <h3 class="text-center mb-3">Create Account</h3>
+<div class="auth-container">
+    <div class="auth-card">
 
-
-    <form method="post" action="/register">
-
-        <div class="mb-2">
-            <label class="form-label">Full Name</label>
-            <input name="name" class="form-control" required>
+        <div class="top-logo">
+            <i class="bi bi-bookmark-fill"></i>
+            BookWise
         </div>
 
-        <div class="mb-2">
-            <label class="form-label">Username</label>
-            <input name="username" class="form-control" required>
-        </div>
+        <h2>Create Account</h2>
 
-        <div class="mb-2">
-            <label class="form-label">Email</label>
-            <input name="email" type="email" class="form-control" required>
-        </div>
+        <form method="post" action="/register">
 
-        <div class="mb-2">
-            <label class="form-label">Password</label>
-            <input name="password" type="password" class="form-control" required>
-        </div>
+            <label class="auth-label">Full Name</label>
+            <input class="form-control mb-2" name="name" required>
 
-        <div class="mb-3">
-            <label class="form-label">Confirm Password</label>
-            <input name="confirmPassword" type="password" class="form-control" required>
-        </div>
+            <label class="auth-label">Username</label>
+            <input class="form-control mb-2" name="username" required>
 
-        <button class="btn btn-success w-100">Register</button>
-    </form>
+            <label class="auth-label">Email</label>
+            <input class="form-control mb-2" type="email" name="email" required>
 
-    <div class="text-center mt-2">
-        <a href="/login">Already have an account?</a>
+            <label class="auth-label">Password</label>
+            <input class="form-control mb-2" type="password" name="password" required>
+
+            <label class="auth-label">Confirm Password</label>
+            <input class="form-control mb-3" type="password" name="confirmPassword" required>
+
+            <button class="btn-primary-custom">Create Account</button>
+        </form>
+
+        <p class="auth-footer">
+            Already have an account? <a href="/login">Login here</a>
+        </p>
+
     </div>
+</div>
+
+<div class="auth-footer">
+    <i class="bi bi-bookmark-fill"></i> BookWise.io © 2025 AI Book Recommendations.
 </div>
 
 </body>

@@ -1,34 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Forgot Password</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <title>Forgot Password | BookWise</title>
+
+    <!-- ✅ Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- ✅ Your CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- ✅ Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 
-<body class="d-flex justify-content-center align-items-center" style="height:100vh;background:#eef4ff;">
-<div class="p-4 bg-white shadow rounded" style="width:350px;">
+<body>
 
-    <h3 class="text-center mb-3">Forgot Password</h3>
+<div class="auth-container">
+    <div class="auth-card">
 
-
-    <form method="post" action="/forgot_password">
-        <div class="mb-2">
-            <label class="form-label">Username</label>
-            <input name="username" class="form-control" required>
+        <div class="top-logo">
+            <i class="bi bi-bookmark-fill"></i>
+            BookWise
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input name="email" type="email" class="form-control" required>
-        </div>
+        <h2>Forgot Password</h2>
 
-        <button class="btn btn-primary w-100">Verify Account</button>
-    </form>
+        <form method="post" action="/forgot_password">
 
-    <div class="text-center mt-2">
-        <a href="/login">Back to Login</a>
+            <label class="auth-label">Username</label>
+            <input class="form-control mb-2" name="username" required>
+
+            <label class="auth-label">Email</label>
+            <input class="form-control mb-3" type="email" name="email" required>
+
+            <button class="btn-primary-custom">Verify Account</button>
+        </form>
+
+        <p class="auth-footer">
+            Remember your password? <a href="/login">Go back to Login</a>
+        </p>
+
     </div>
-
 </div>
+
+<div class="auth-footer">
+    <i class="bi bi-bookmark-fill"></i> BookWise.io © 2025 AI Book Recommendations.
+</div>
+
 </body>
 </html>
