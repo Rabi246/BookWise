@@ -1,39 +1,77 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login - BookWise</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Login</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background-color: #f4f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-card {
+            width: 350px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .login-card h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2d4a7c;
+        }
+
+        .login-card button {
+            width: 100%;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
-<body class="bg-light">
 
-<div class="container d-flex justify-content-center align-items-center" style="min-height:100vh;">
-    <div class="card shadow p-4" style="max-width:400px; width:100%;">
-        <h3 class="text-center mb-3">Welcome to BookWise</h3>
-        <h5 class="text-center text-secondary mb-4">Login</h5>
+<body>
+<div class="login-card">
+    <h2>Login</h2>
 
 
-        <form action="/login" method="post">
-            <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input required name="username" type="text" class="form-control">
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input required name="password" type="password" class="form-control">
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100 mt-2">Login</button>
-        </form>
-
-        <div class="text-center mt-3">
-            <small>Don't have an account? <a href="/register">Register here</a></small>
+    <form method="post" action="/login">
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input name="username" type="text"
+                   class="form-control" placeholder="Enter username" required>
         </div>
-    </div>
-</div>
 
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input name="password"
+                   type="password" class="form-control"
+                   placeholder="Enter password" required>
+        </div><br>
+        <div class="mt-3 text-center">
+            <a href="/register">Create an Account</a>
+        </div>
+        <div class="mt-3 text-center">
+            <a href="/forgot_password">forgot password?</a>
+        </div>
+
+
+
+        <button class="btn btn-primary" type="submit">Log In</button>
+    </form>
+</div>
 </body>
 </html>
