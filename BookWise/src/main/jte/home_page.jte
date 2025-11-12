@@ -29,7 +29,7 @@
                 <div class="card-body d-flex flex-column">
 
                     <div class="chat-window mb-3" style="height:350px; overflow-y:auto; border:1px solid #ddd; padding:10px;">
-                        @if(history != null && !history.isEmpty()) 
+                        @if(history != null && !history.isEmpty())
                             @for(var exchange : history)
                                 <div class="mb-2"><strong>You:</strong> ${exchange.getUserMessage()}</div>
                                 <div class="mb-3 text-success"><strong>AI:</strong> ${exchange.getAiMessage()}</div>

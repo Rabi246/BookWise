@@ -21,6 +21,6 @@ public class BookSearchController {
     @ResponseBody
     @GetMapping("/api/searchBooks")
     public String searchBooks(@RequestParam String q) {
-        return booksService.searchBooks(q);
+        return booksService.smartSearch(q);
     }
 }

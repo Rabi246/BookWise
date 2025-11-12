@@ -18,4 +18,31 @@ public class GoogleBooksService {
 
         return restTemplate.getForObject(url, String.class);
     }
+
+    public String smartSearch(String query) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        // Try in this order: title + author, title only, raw query
+        String[] queries = {
+                "intitle:" + query,
+                "inauthor:" + query,
+                query
+        };
+
+        for (String q : queries) {
+            String url = UriComponentsBuilder.fromHttpUrl(API_URL)
+                    .queryParam("q", q)
+                    .queryParam("maxResults", 10)
+                    .toUriString();
+
+            try {
+                String response = restTemplate.getForObject(url, String.class);
+                if (response != null && response.contains("items")) {
+                    return response;
+                }
+            } catch (Exception ignored) {}
+        }
+
+        return "{\"items\": []}";
+    }
 }
