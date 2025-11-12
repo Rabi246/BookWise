@@ -56,5 +56,22 @@ public class HomeController {
         messages.add(new UserMessage(message));
         return chatClient.prompt(new Prompt(messages)).call().content();
     }
+    @PostMapping("/ask")
+    public String ask(@RequestParam String prompt, Model model) {
+
+        // Send user prompt to AI
+        String aiResponse = chatClient
+                .prompt()
+                .user(prompt)
+                .call()
+                .content();
+
+        // Save history
+        history.add(new Exchange(prompt, aiResponse));
+
+        // Return updated chat UI
+        model.addAttribute("history", history);
+        return "home_page";
+    }
 }
 
