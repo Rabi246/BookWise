@@ -32,9 +32,10 @@
 @raw
 <script>
     function searchBook() {
-        const q = document.getElementById("search").value;
+        const q = document.getElementById("search").value.trim();
+        const cleanQ = q.replace(/[']/g, ""); // remove apostrophes
 
-        fetch(`/api/searchBooks?q=${encodeURIComponent(q)}`)
+        fetch(`/api/searchBooks?q=${encodeURIComponent(cleanQ)}`)
             .then(res => res.json())
             .then(data => {
                 const results = document.getElementById("results");

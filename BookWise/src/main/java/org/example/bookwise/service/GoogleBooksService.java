@@ -24,8 +24,11 @@ public class GoogleBooksService {
 
         // Try in this order: title + author, title only, raw query
         String[] queries = {
+                "intitle:\"" + query + "\"",
                 "intitle:" + query,
                 "inauthor:" + query,
+                query.replace("'", ""), // remove apostrophes
+                "\"" + query + "\"",     // exact phrase
                 query
         };
 
