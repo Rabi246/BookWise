@@ -24,8 +24,8 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="/mybooks">My Library</a></li>
-                <li class="nav-item"><a class="nav-link active" href="/home_page">Recommendations</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/mybooks">My Library</a></li>
+                <li class="nav-item"><a class="nav-link " href="/home_page">Recommendations</a></li>
                 <li class="nav-item"><a class="nav-link" href="/booksearch">Search</a></li>
             </ul>
 
