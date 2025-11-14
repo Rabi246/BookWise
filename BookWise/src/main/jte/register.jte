@@ -15,9 +15,9 @@
         <div class="top-logo"><i class="bi bi-bookmark-fill"></i> BookWise</div>
         <h2>Create Account</h2>
 
-        @if(error != null) {
+        @if(error != null)
         <div class="alert alert-danger mb-3">${error}</div>
-        }
+
         @endif
         <form method="post" action="/register">
             <label class="auth-label">Full Name</label>
