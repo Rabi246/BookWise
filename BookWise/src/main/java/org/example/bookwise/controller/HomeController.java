@@ -1,5 +1,7 @@
 package org.example.bookwise.controller;
 
+import jakarta.servlet.http.HttpSession;
+import org.example.bookwise.UserService;
 import org.example.bookwise.Exchange;
 import org.example.bookwise.SessionStore;
 import org.springframework.ai.chat.client.ChatClient;
@@ -16,15 +18,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.example.bookwise.model.User;
+
 
 @Controller
 public class HomeController {
     private final ChatClient chatClient;
     private final SessionStore sessionStore;
+    private final UserService userService;
 
-    public HomeController(ChatClient.Builder chatClientBuilder, SessionStore sessionStore) {
+    public HomeController(ChatClient.Builder chatClientBuilder, SessionStore sessionStore, UserService userService) {
         this.chatClient = chatClientBuilder.build();
         this.sessionStore = sessionStore;
+        this.userService = userService;
     }
 
     @RequestMapping("/")
@@ -33,14 +39,20 @@ public class HomeController {
     }
 
     @GetMapping("/home_page")
-    public String homePage(Model model) {
-        // Add user info and chat history to model
-        if (sessionStore.getCurrentUser() != null) {
-            model.addAttribute("username", sessionStore.getCurrentUser().getUsername());
+    public String homePage(HttpSession session, Model model) {
+        Integer userId = (Integer) session.getAttribute("currentUserId");
+        if (userId == null) {
+            return "redirect:/login";
         }
-        model.addAttribute("history", sessionStore.getChatHistory());
+
+        String username = userService.findById(userId)
+                .map(User::getUsername)
+                .orElse("Guest");
+
+        model.addAttribute("username", username);
         return "home_page";
     }
+
 
     @PostMapping("/home_page")
     public String chat(String message) {

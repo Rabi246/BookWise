@@ -3,6 +3,7 @@
 @param List<Exchange> history
 @param String username
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,6 +14,7 @@
 </head>
 <body class="bg-light">
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container-fluid">
         <a class="navbar-brand" href="/home_page">📚 BookWise</a>
@@ -29,12 +31,14 @@
             </ul>
 
             @if(username != null)
-                <span class="navbar-text text-white me-3">Welcome, ${username}</span>
+                <div class="d-flex align-items-center">
+                    <span class="navbar-text text-white me-3">Welcome, ${username}</span>
+                    <a class="btn btn-outline-light btn-sm" href="/logout">Logout</a>
+                </div>
             @endif
         </div>
     </div>
 </nav>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <div class="container-fluid px-4">
     <div class="row g-4">
