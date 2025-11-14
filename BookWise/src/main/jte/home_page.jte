@@ -84,7 +84,7 @@
                 <div class="card-body d-flex flex-column">
 
                     <!-- Search Input -->
-                    <div class="d-flex mb-3">
+                    <div class="d-flex mb-3 ">
                         <input id="search" type="text" class="form-control me-2"
                                placeholder="Search for books..."
                                onkeypress="if(event.key==='Enter') searchBook()">
