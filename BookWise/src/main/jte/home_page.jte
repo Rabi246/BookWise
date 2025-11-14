@@ -106,14 +106,19 @@
 <script>
     // Extract book title from AI response
     function extractBookTitle(aiResponse) {
-        // Look for patterns like "Title" by Author or **Title**
+        // Try to match "Title" by Author pattern first
+        const titleAuthorPattern = /"([^"]+)"\s+by\s+([^.,]+)/i;
+        const match = aiResponse.match(titleAuthorPattern);
+
+        if (match && match[1] && match[2]) {
+            return `${match[1].trim()} ${match[2].trim()}`; // Return "Title Author"
+        }
+
+        // Fallback to original patterns
         const patterns = [
-            /"([^"]+)"\s+by/i,           // "Title" by Author
-            /\*\*([^*]+)\*\*/,           // **Title**
-            /'([^']+)'\s+by/i,           // 'Title' by Author
-            /recommend\s+"([^"]+)"/i,    // recommend "Title"
-            /suggest\s+"([^"]+)"/i,      // suggest "Title"
-            /try\s+"([^"]+)"/i,          // try "Title"
+            /"([^"]+)"/i,
+            /\*\*([^*]+)\*\*/,
+            /'([^']+)'/i,
         ];
 
         for (let pattern of patterns) {
