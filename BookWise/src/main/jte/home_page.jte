@@ -76,26 +76,22 @@
             </div>
         </div>
 
-        <!-- RIGHT PANEL: Google Books Search -->
+        <!-- RIGHT PANEL: Book Recommendations -->
         <div class="col-md-6">
             <div class="card shadow-lg h-100">
                 <div class="card-header bg-success text-white">
-                    🔍 Search Google Books
+                    📚 Recommended Books
                 </div>
                 <div class="card-body d-flex flex-column">
 
-                    <!-- Search Input -->
-                    <div class="d-flex mb-3 ">
-                        <input id="search" type="text" class="form-control me-2"
-                               placeholder="Search for books..."
-                               onkeypress="if(event.key==='Enter') searchBook()">
-                        <button class="btn btn-success px-4" onclick="searchBook()">Search</button>
-                    </div>
+                    <!-- Hidden search input (for auto-search functionality) -->
+                    <input id="search" type="hidden">
 
                     <!-- Search Results Window -->
-                    <div id="results" style="height:400px; overflow-y:auto; border:1px solid #ddd; padding:10px; background-color: #f8f9fa; border-radius:8px;">
+                    <div id="results" style="height:460px; overflow-y:auto; border:1px solid #ddd; padding:10px; background-color: #f8f9fa; border-radius:8px;">
                         <div class="text-muted text-center mt-5">
-                            Ask AI for a recommendation or search manually
+                            <i class="bi bi-chat-dots" style="font-size: 3rem;"></i>
+                            <p class="mt-3">Ask the AI for a book recommendation to see results here!</p>
                         </div>
                     </div>
 
