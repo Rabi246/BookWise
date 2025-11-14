@@ -9,6 +9,7 @@
     <meta charset="UTF-8">
     <title>BookWise | Home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
@@ -197,14 +198,20 @@
                         ? description.substring(0, 150) + "..."
                         : description;
 
+                    const bookId = book.id;
+
                     results.innerHTML += `
-                        <div class="d-flex mb-3 p-3 bg-white border rounded shadow-sm">
+                        <div class="d-flex mb-3 p-3 bg-white border rounded shadow-sm position-relative">
                             <img src="${thumbnail}" style="width:80px; height:120px; object-fit:cover; margin-right:15px; border-radius:4px;">
                             <div class="flex-grow-1">
                                 <div class="fw-bold text-primary fs-6">${title}</div>
                                 <div class="text-warning small mb-2">by ${authors}</div>
                                 ${truncatedDesc ? `<p class="mb-0 small text-secondary lh-sm">${truncatedDesc}</p>` : ''}
                             </div>
+                            <button class="btn btn-success btn-sm position-absolute top-0 end-0 m-2"
+                                    onclick="addToLibrary('${bookId}', '${title.replace(/'/g, "\\'")}', '${authors.replace(/'/g, "\\'")}', '${thumbnail}', '${truncatedDesc.replace(/'/g, "\\'")}')">
+                                <i class="bi bi-plus-lg"></i> Add
+                            </button>
                         </div>
                     `;
                 });
@@ -216,6 +223,38 @@
                 console.error('Error:', err);
                 document.getElementById("results").innerHTML =
                     '<div class="alert alert-danger m-2">Error fetching data. Please try again.</div>';
+            });
+    }
+
+    // Add book to library
+    function addToLibrary(bookId, title, authors, thumbnail, description) {
+        const book = {
+            id: bookId,
+            title: title,
+            authors: authors,
+            thumbnail: thumbnail,
+            description: description
+        };
+
+        fetch('/api/addBook', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(book)
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    alert('✓ Book added to your library!');
+                } else {
+                    alert('Failed to add book: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('Error adding book to library');
             });
     }
 </script>
