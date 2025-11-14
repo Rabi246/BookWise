@@ -1,29 +1,35 @@
 package org.example.bookwise.controller;
 
 import org.example.bookwise.SessionStore;
+import org.example.bookwise.UserService;
 import org.example.bookwise.model.Book;
+import org.example.bookwise.model.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class BookController {
 
     private final SessionStore sessionStore;
+    private final UserService userService;
 
-    public BookController(SessionStore sessionStore) {
+    public BookController(SessionStore sessionStore, UserService userService) {
         this.sessionStore = sessionStore;
+        this.userService = userService;
     }
 
     @GetMapping("/mybooks")
-    public String myBooks(Model model, Principal principal) {
-        String username = (principal != null) ? principal.getName() : null;
-
-        if (sessionStore.getCurrentUser() != null) {
-            username = sessionStore.getCurrentUser().getUsername();
+    public String myBooks(HttpSession session,Model model) {
+        Integer userId = (Integer) session.getAttribute("currentUserId");
+        if (userId == null) {
+            return "redirect:/login";
         }
+
+        String username = userService.findById(userId)
+                .map(User::getUsername)
+                .orElse("Guest");
 
         model.addAttribute("username", username);
         model.addAttribute("books", sessionStore.getMyBooks());

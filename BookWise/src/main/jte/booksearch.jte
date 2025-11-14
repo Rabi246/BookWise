@@ -1,3 +1,4 @@
+@param String username
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,27 +11,31 @@
 
 <body class="bg-light">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container-fluid">
         <a class="navbar-brand" href="/home_page">📚 BookWise</a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                <li class="nav-item"><a class="nav-link " href="/mybooks">My Library</a></li>
-                <li class="nav-item"><a class="nav-link"  href="/home_page">Recommendations</a></li>
-                <li class="nav-item"><a class="nav-link active" href="/booksearch">Book Search</a></li>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="/mybooks">My Library</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/home_page">Recommendations</a></li>
+                <li class="nav-item"><a class="nav-link" href="/booksearch">Search</a></li>
             </ul>
-        </div>
 
+            @if(username != null)
+                <div class="d-flex align-items-center">
+                    <span class="navbar-text text-white me-3">Welcome, ${username}</span>
+                    <a class="btn btn-outline-light btn-sm" href="/logout">Logout</a>
+                </div>
+            @endif
+        </div>
     </div>
 </nav>
+
 
 
 <div class="container mt-4">

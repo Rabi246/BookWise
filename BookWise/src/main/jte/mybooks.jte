@@ -13,7 +13,7 @@
 </head>
 
 <body class="bg-light">
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container-fluid">
         <a class="navbar-brand" href="/home_page">📚 BookWise</a>
@@ -24,13 +24,16 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link active" href="/mybooks">My Library</a></li>
-                <li class="nav-item"><a class="nav-link" href="/home_page">Recommendations</a></li>
+                <li class="nav-item"><a class="nav-link" href="/mybooks">My Library</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/home_page">Recommendations</a></li>
                 <li class="nav-item"><a class="nav-link" href="/booksearch">Search</a></li>
             </ul>
 
             @if(username != null)
-                <span class="navbar-text text-white me-3">Welcome, ${username}</span>
+                <div class="d-flex align-items-center">
+                    <span class="navbar-text text-white me-3">Welcome, ${username}</span>
+                    <a class="btn btn-outline-light btn-sm" href="/logout">Logout</a>
+                </div>
             @endif
         </div>
     </div>

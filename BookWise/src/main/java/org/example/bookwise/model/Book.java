@@ -1,6 +1,10 @@
 package org.example.bookwise.model;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Book {
+    @Id
     private String id;
     private String title;
     private String authors;
@@ -8,14 +12,6 @@ public class Book {
     private String description;
 
     public Book() {}
-
-    public Book(String id, String title, String authors, String thumbnail, String description) {
-        this.id = id;
-        this.title = title;
-        this.authors = authors;
-        this.thumbnail = thumbnail;
-        this.description = description;
-    }
 
     public String getId() {
         return id;
