@@ -94,7 +94,6 @@
                 </div>
             </div>
         </div>
-
         <!-- RIGHT: Books -->
         <div class="col-md-6">
             <div class="card shadow-lg">
@@ -111,9 +110,8 @@
                 </div>
             </div>
         </div>
-
     </div>
-
+</div>
 
 @raw
 <script>
