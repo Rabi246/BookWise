@@ -11,6 +11,7 @@
     <title>BookWise | Home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="bg-light">
 
@@ -40,7 +41,7 @@
     </div>
 </nav>
 
-<div class="container-fluid px-4">
+<div class="container-fluid px-4 page-content">
     <div class="row g-4">
 
         <!-- LEFT PANEL: AI Chatbot -->
@@ -264,6 +265,6 @@
     }
 </script>
 @endraw
-
+<div class="auth-footer"><i class="bi bi-bookmark-fill"></i> BookWise.io © 2025 AI Book Recommendations.</div>
 </body>
 </html>
