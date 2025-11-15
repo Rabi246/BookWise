@@ -7,37 +7,6 @@
     <title>BookWise | Ask the Librarian</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        .chat-messages {
-            height: 450px;
-            overflow-y: auto;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        .message {
-            margin-bottom: 15px;
-            padding: 12px;
-            border-radius: 8px;
-        }
-        .user-message {
-            background-color: #e3f2fd;
-            margin-left: 15%;
-        }
-        .ai-message {
-            background-color: #ffffff;
-            border: 1px solid #dee2e6;
-            margin-right: 15%;
-        }
-        .results-panel {
-            height: 535px;
-            overflow-y: auto;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-        }
-    </style>
 </head>
 <body class="bg-light">
 
@@ -55,17 +24,21 @@
             </ul>
             @if(username != null)
                 <div class="d-flex align-items-center">
-                    <span class="navbar-text text-white me-3">Welcome, ${username}</span>
-                    <a class="btn btn-outline-light btn-sm" href="/logout">Logout</a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle" style="font-size: 2rem"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><span class="dropdown-item-text fw-bold">${username}</span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+                        </ul>
+                    </div>
                 </div>
             @endif
         </div>
     </div>
 </nav>
-
-<div class="container-fluid px-4">
-    <h2 class="mb-4">Ask the Librarian</h2>
-
     <div class="row g-4">
 
         <!-- LEFT: Chat -->
@@ -240,7 +213,5 @@
     }
 </script>
 @endraw
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

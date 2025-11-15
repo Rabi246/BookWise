@@ -1,0 +1,68 @@
+/* Scope only to My Library page */
+.mylibrary-page #library-container {
+    display: flex;
+    gap: 25px;
+    padding: 15px;
+}
+
+/* LEFT */
+.mylibrary-page #library-left {
+    width: 30%;
+}
+
+.mylibrary-page .book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 120px);
+    gap: 15px;
+}
+
+.mylibrary-page .book-card {
+    width: 120px;
+    height: 160px;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    transition: .2s;
+    flex: none !important;
+}
+
+.mylibrary-page .book-card:hover { border-color: #4A90E2; }
+
+.mylibrary-page .book-card .book-cover {
+    width: 120px !important;
+    height: 160px !important;
+    object-fit: cover;
+    display: block;
+}
+
+/* RIGHT PANEL */
+.mylibrary-page #details-panel {
+    width: 70%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.mylibrary-page .hidden { display: none; }
+
+.mylibrary-page .close-btn {
+    float: right;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* rating visuals */
+.rating .star {
+    border: 0;
+    background: transparent;
+    font-size: 1.5rem;
+    cursor: pointer;
+    opacity: 0.5;
+    line-height: 1;
+}
+.rating .star[data-selected="1"] { opacity: 1; }
+.rating .star:hover { opacity: 0.85; }
