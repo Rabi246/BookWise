@@ -33,8 +33,16 @@
 
             @if(username != null)
                 <div class="d-flex align-items-center">
-                    <span class="navbar-text text-white me-3">Welcome, ${username}</span>
-                    <a class="btn btn-outline-light btn-sm" href="/logout">Logout</a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle" style="font-size: 2rem"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><span class="dropdown-item-text fw-bold">${username}</span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+                        </ul>
+                    </div>
                 </div>
             @endif
         </div>
