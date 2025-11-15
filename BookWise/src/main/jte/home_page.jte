@@ -1,35 +1,58 @@
-@import org.example.bookwise.Exchange
-@import java.util.List
-@param List<Exchange> history
 @param String username
-
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BookWise | Home</title>
+    <title>BookWise | Ask the Librarian</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .chat-messages {
+            height: 450px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        .user-message {
+            background-color: #e3f2fd;
+            margin-left: 15%;
+        }
+        .ai-message {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            margin-right: 15%;
+        }
+        .results-panel {
+            height: 535px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container-fluid">
         <a class="navbar-brand" href="/home_page">📚 BookWise</a>
-
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item"><a class="nav-link" href="/mybooks">My Library</a></li>
                 <li class="nav-item"><a class="nav-link active" href="/home_page">Recommendations</a></li>
                 <li class="nav-item"><a class="nav-link" href="/booksearch">Search</a></li>
             </ul>
-
             @if(username != null)
                 <div class="d-flex align-items-center">
                     <span class="navbar-text text-white me-3">Welcome, ${username}</span>
@@ -41,64 +64,50 @@
 </nav>
 
 <div class="container-fluid px-4">
+    <h2 class="mb-4">Ask the Librarian</h2>
+
     <div class="row g-4">
 
-        <!-- LEFT PANEL: AI Chatbot -->
+        <!-- LEFT: Chat -->
         <div class="col-md-6">
-            <div class="card shadow-lg h-100">
+            <div class="card shadow-lg">
                 <div class="card-header bg-primary text-white">
-                    🤖 AI Book Assistant
+                    <h5 class="mb-0"><i class="bi bi-chat-dots"></i> Conversation</h5>
                 </div>
-                <div class="card-body d-flex flex-column">
-
-                    <!-- Chat History Window -->
-                    <div class="chat-window mb-3" style="height:400px; overflow-y:auto; border:1px solid #ddd; padding:15px; background-color: #f8f9fa; border-radius:8px;">
-                        @if(history != null && !history.isEmpty())
-                            @for(var exchange : history)
-                                <div class="mb-2">
-                                    <strong class="text-primary">You:</strong>
-                                    <span>${exchange.getUserMessage()}</span>
-                                </div>
-                                <div class="mb-3 p-2 bg-white rounded">
-                                    <strong class="text-success">AI:</strong>
-                                    <span>${exchange.getAiMessage()}</span>
-                                </div>
-                            @endfor
-                        @else
-                            <div class="text-muted">👋 Hi! Ask me for book recommendations!</div>
-                        @endif
+                <div class="card-body p-0">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai-message">
+                            <strong class="text-success">📚 Librarian:</strong>
+                            <p class="mb-0 mt-2">Hello! What are you feeling like reading today?</p>
+                        </div>
                     </div>
-
-                    <!-- Chat Input Form -->
-                    <form method="post" action="/ask" class="d-flex mt-auto" onsubmit="handleFormSubmit()">
-                        <input type="text" name="prompt" id="promptInput" class="form-control me-2"
-                               placeholder="Recommend me a book about..." required>
-                        <button type="submit" class="btn btn-primary px-4">Send</button>
-                    </form>
-
+                    <div class="p-3">
+                        <div class="input-group">
+                            <input type="text" id="chatInput" class="form-control"
+                                   placeholder="What are you feeling like reading?"
+                                   onkeypress="if(event.key==='Enter') sendMessage()">
+                            <button class="btn btn-primary" onclick="sendMessage()">
+                                <i class="bi bi-send-fill"></i> Send
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- RIGHT PANEL: Book Recommendations -->
+        <!-- RIGHT: Books -->
         <div class="col-md-6">
-            <div class="card shadow-lg h-100">
+            <div class="card shadow-lg">
                 <div class="card-header bg-success text-white">
-                    📚 Recommended Books
+                    <h5 class="mb-0"><i class="bi bi-book-half"></i> Recommended Books</h5>
                 </div>
-                <div class="card-body d-flex flex-column">
-
-                    <!-- Hidden search input (for auto-search functionality) -->
-                    <input id="search" type="hidden">
-
-                    <!-- Search Results Window -->
-                    <div id="results" style="height:460px; overflow-y:auto; border:1px solid #ddd; padding:10px; background-color: #f8f9fa; border-radius:8px;">
-                        <div class="text-muted text-center mt-5">
-                            <i class="bi bi-chat-dots" style="font-size: 3rem;"></i>
-                            <p class="mt-3">Ask the AI for a book recommendation to see results here!</p>
+                <div class="card-body p-0">
+                    <div class="results-panel" id="results">
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-books" style="font-size: 4rem; opacity: 0.3;"></i>
+                            <p class="mt-3">Start chatting to get recommendations!</p>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -108,162 +117,130 @@
 
 @raw
 <script>
-    // Extract book title from AI response
-    function extractBookTitle(aiResponse) {
-        // Try to match "Title" by Author pattern first
-        const titleAuthorPattern = /"([^"]+)"\s+by\s+([^.,]+)/i;
-        const match = aiResponse.match(titleAuthorPattern);
+    function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
 
-        if (match && match[1] && match[2]) {
-            return `${match[1].trim()} ${match[2].trim()}`; // Return "Title Author"
-        }
+        if (!message) return;
 
-        // Fallback to original patterns
-        const patterns = [
-            /"([^"]+)"/i,
-            /\*\*([^*]+)\*\*/,
-            /'([^']+)'/i,
-        ];
+        addMessage('user', message);
+        input.value = '';
 
-        for (let pattern of patterns) {
-            const match = aiResponse.match(pattern);
-            if (match && match[1]) {
-                return match[1].trim();
-            }
-        }
+        addMessage('ai', '<em class="text-muted">Thinking...</em>', 'loading');
 
-        return null;
-    }
+        document.getElementById('results').innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-success"></div>
+                <p class="mt-3">Finding books...</p>
+            </div>
+        `;
 
-    // Handle form submission - set flag to trigger auto-search after page reload
-    function handleFormSubmit() {
-        sessionStorage.setItem('triggerAutoSearch', 'true');
-        return true; // Allow form to submit normally
-    }
-
-    // Auto-search when page loads after AI response
-    window.addEventListener('DOMContentLoaded', function() {
-        if (sessionStorage.getItem('triggerAutoSearch') === 'true') {
-            sessionStorage.removeItem('triggerAutoSearch');
-
-            // Get the last AI response
-            const chatWindow = document.querySelector('.chat-window');
-            if (!chatWindow) return;
-
-            const aiMessages = chatWindow.querySelectorAll('.text-success');
-
-            if (aiMessages.length > 0) {
-                const lastAiMessageElement = aiMessages[aiMessages.length - 1].parentElement;
-                const lastAiMessage = lastAiMessageElement.textContent.replace('AI:', '').trim();
-                const bookTitle = extractBookTitle(lastAiMessage);
-
-                if (bookTitle) {
-                    // Auto-populate search box
-                    document.getElementById('search').value = bookTitle;
-                    // Auto-search
-                    setTimeout(() => searchBook(), 300);
-                }
-            }
-        }
-    });
-
-    function searchBook() {
-        const q = document.getElementById("search").value.trim();
-
-        if (!q) {
-            document.getElementById("results").innerHTML =
-                '<div class="alert alert-warning m-2">Please enter a search term</div>';
-            return;
-        }
-
-        // Show loading spinner
-        document.getElementById("results").innerHTML =
-            '<div class="text-center mt-5"><div class="spinner-border text-success" role="status"></div><p class="mt-2">Searching...</p></div>';
-
-        fetch(`/api/searchBooks?q=${encodeURIComponent(q)}`)
+        fetch('/api/ai/recommendations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `query=${encodeURIComponent(message)}&count=5`
+        })
             .then(res => res.json())
             .then(data => {
-                const results = document.getElementById("results");
-                results.innerHTML = "";
+                document.querySelector('.loading')?.remove();
 
-                if (!data.items || data.items.length === 0) {
-                    results.innerHTML = '<div class="alert alert-info m-2">No results found</div>';
-                    return;
+                if (data.aiResponse) {
+                    const formatted = data.aiResponse
+                        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\n/g, '<br>');
+                    addMessage('ai', formatted);
                 }
 
-                data.items.forEach(book => {
-                    const info = book.volumeInfo;
-                    const title = info.title || "No Title";
-                    const authors = info.authors ? info.authors.join(", ") : "Unknown Author";
-                    const thumbnail = info.imageLinks && info.imageLinks.thumbnail
-                        ? info.imageLinks.thumbnail.replace('http:', 'https:')
-                        : "https://via.placeholder.com/80x120?text=No+Cover";
-                    const description = info.description || "";
-                    const truncatedDesc = description.length > 150
-                        ? description.substring(0, 150) + "..."
-                        : description;
-
-                    const bookId = book.id;
-
-                    results.innerHTML += `
-                        <div class="d-flex mb-3 p-3 bg-white border rounded shadow-sm position-relative">
-                            <img src="${thumbnail}" style="width:80px; height:120px; object-fit:cover; margin-right:15px; border-radius:4px;">
-                            <div class="flex-grow-1">
-                                <div class="fw-bold text-primary fs-6">${title}</div>
-                                <div class="text-warning small mb-2">by ${authors}</div>
-                                ${truncatedDesc ? `<p class="mb-0 small text-secondary lh-sm">${truncatedDesc}</p>` : ''}
-                            </div>
-                            <button class="btn btn-success btn-sm position-absolute top-0 end-0 m-2"
-                                    onclick="addToLibrary('${bookId}', '${title.replace(/'/g, "\\'")}', '${authors.replace(/'/g, "\\'")}', '${thumbnail}', '${truncatedDesc.replace(/'/g, "\\'")}')">
-                                <i class="bi bi-plus-lg"></i> Add
-                            </button>
-                        </div>
-                    `;
-                });
-
-                // Scroll to top of results
-                results.scrollTop = 0;
+                if (data.items && data.items.length > 0) {
+                    displayBooks(data.items);
+                } else {
+                    document.getElementById('results').innerHTML = `
+                    <div class="alert alert-warning m-3">No books found!</div>
+                `;
+                }
             })
             .catch(err => {
-                console.error('Error:', err);
-                document.getElementById("results").innerHTML =
-                    '<div class="alert alert-danger m-2">Error fetching data. Please try again.</div>';
+                document.querySelector('.loading')?.remove();
+                addMessage('ai', 'Sorry, something went wrong!');
+                console.error(err);
             });
     }
 
-    // Add book to library
-    function addToLibrary(bookId, title, authors, thumbnail, description) {
-        const book = {
-            id: bookId,
-            title: title,
-            authors: authors,
-            thumbnail: thumbnail,
-            description: description
-        };
+    function addMessage(sender, text, className = '') {
+        const chat = document.getElementById('chatMessages');
+        const div = document.createElement('div');
+        div.className = `message ${sender === 'user' ? 'user-message' : 'ai-message'} ${className}`;
 
+        if (sender === 'user') {
+            div.innerHTML = `<strong class="text-primary">You:</strong><p class="mb-0 mt-2">${text}</p>`;
+        } else {
+            div.innerHTML = `<strong class="text-success">📚 Librarian:</strong><div class="mt-2">${text}</div>`;
+        }
+
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    function displayBooks(books) {
+        const results = document.getElementById('results');
+        results.innerHTML = '';
+
+        books.forEach(book => {
+            const info = book.volumeInfo;
+            const title = info.title || "No Title";
+            const authors = info.authors ? info.authors.join(", ") : "Unknown";
+            const thumbnail = info.imageLinks?.thumbnail?.replace('http:', 'https:') ||
+                "https://via.placeholder.com/128x190?text=No+Cover";
+            const desc = info.description || "";
+            const shortDesc = desc.length > 150 ? desc.substring(0, 150) + "..." : desc;
+
+            results.innerHTML += `
+                <div class="card mb-3">
+                    <div class="row g-0">
+                        <div class="col-3">
+                            <img src="${thumbnail}" class="img-fluid rounded-start" style="height:100%; object-fit:cover;">
+                        </div>
+                        <div class="col-7 p-3">
+                            <h6 class="text-primary mb-1">${title}</h6>
+                            <p class="text-warning small mb-2">by ${authors}</p>
+                            <p class="small text-secondary mb-0">${shortDesc}</p>
+                        </div>
+                        <div class="col-2 d-flex align-items-center justify-content-center">
+                            <button class="btn btn-success" onclick="addToLibrary('${book.id}', \`${title}\`, \`${authors}\`, '${thumbnail}', \`${desc}\`)">
+                                <i class="bi bi-plus-circle"></i><br><small>Add</small>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function addToLibrary(id, title, authors, thumb, desc) {
         fetch('/api/addBook', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(book)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: id,
+                title: title,
+                authors: authors,
+                thumbnail: thumb,
+                description: desc
+            })
         })
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    // Show success message
-                    alert('✓ Book added to your library!');
-                } else {
-                    alert('Failed to add book: ' + data.message);
+                    event.target.innerHTML = '<i class="bi bi-check"></i><br><small>Added!</small>';
+                    event.target.classList.replace('btn-success', 'btn-secondary');
+                    event.target.disabled = true;
                 }
             })
-            .catch(err => {
-                console.error('Error:', err);
-                alert('Error adding book to library');
-            });
+            .catch(err => console.error(err));
     }
 </script>
 @endraw
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
