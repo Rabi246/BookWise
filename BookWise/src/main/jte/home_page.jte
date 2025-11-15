@@ -41,7 +41,9 @@
     </div>
 </nav>
 
+
 <div class="container-fluid px-4 page-content">
+    <h2 class="mb-3 fw-bold">AI Recommendations</h2>
     <div class="row g-4">
 
         <!-- LEFT PANEL: AI Chatbot -->
