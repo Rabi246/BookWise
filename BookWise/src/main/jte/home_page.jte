@@ -86,7 +86,7 @@
         </div>
 
     </div>
-</div>
+
 
 @raw
 <script>
