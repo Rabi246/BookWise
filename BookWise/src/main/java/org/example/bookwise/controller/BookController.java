@@ -82,6 +82,17 @@ public class BookController {
 
         Book saved = bookRepository.save(book);
 
+        // Check if already in library
+        boolean exists = libraryRepository.findByOwner(user)
+                .stream()
+                .anyMatch(e -> e.getBook().getId().equals(saved.getId()));
+
+        if (exists) {
+            return """
+        {"success": false, "message": "Book already in your library"}
+        """;
+        }
+
         // Create library entry
         Library lib = new Library();
         lib.setOwner(user);

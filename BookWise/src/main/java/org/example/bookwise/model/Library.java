@@ -7,7 +7,9 @@ import java.util.List;
 
 
 @Entity
-@Table(name="libraries")
+@Table(name="libraries", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"owner_id", "book_id"})
+})
 public class Library {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,7 +18,7 @@ public class Library {
     @ManyToOne
     private User owner;
 
-    @ManyToOne (cascade = CascadeType.ALL)
+    @ManyToOne
     private Book book;
 
     private LocalDateTime addedAt = LocalDateTime.now();
