@@ -66,7 +66,7 @@ public class RecommendationController {
     }
 
     // -----------------------------------------------------------------------------------------
-    // 2. MULTIPLE Recommendations (the 5-volume one you're using)
+    // 2. MULTIPLE Recommendations (5-book conversational)
     // -----------------------------------------------------------------------------------------
     @ResponseBody
     @PostMapping("/api/ai/recommendations")
@@ -74,31 +74,42 @@ public class RecommendationController {
                                              @RequestParam(defaultValue = "5") int count) {
         try {
             String prompt = """
-                You are a librarian. Return EXACTLY this JSON format:
-
-                {
-                  "books": [
-                    { "title": "TITLE_1", "author": "AUTHOR_1" },
-                    { "title": "TITLE_2", "author": "AUTHOR_2" }
-                  ]
-                }
-
-                NO explanations.
-                NO markdown.
-                NO extra sentences.
+                You are a knowledgeable and friendly librarian.
 
                 User request: "%s"
-                """.formatted(query);
+
+                Respond conversationally (3–6 sentences) with helpful book recommendations.
+                You may list the books in a natural way.
+
+                IMPORTANT:
+                After your conversational reply, output EXACTLY ONE JSON object on the last line ONLY.
+                The JSON must be:
+
+                {
+                   "books": [
+                      { "title": "...", "author": "..." },
+                      { "title": "...", "author": "..." }
+                   ]
+                }
+
+                The conversational text must come FIRST.
+                The JSON must come LAST and must be valid.
+            """.formatted(query);
 
             String aiResponse = chatClient.prompt(prompt).call().content();
 
-            // Extract AI JSON list
-            List<Map<String, String>> extractedBooks = extractList(aiResponse);
+            // ---------------------------------------------------------
+            // STEP 2: Split AI response into conversational text + JSON
+            // ---------------------------------------------------------
+            int jsonStart = aiResponse.indexOf("{");
+            String chatText = aiResponse.substring(0, jsonStart).trim();
+            String jsonText = aiResponse.substring(jsonStart).trim();
+
+            // Extract book list from JSON
+            List<Map<String, String>> extractedBooks = extractList(jsonText);
             List<JsonNode> verifiedBooks = new ArrayList<>();
 
-            // -----------------------------------------------------------------------
-            // 💛 FIXED VERIFICATION LOOP — ensures correct volume match
-            // -----------------------------------------------------------------------
+            // Verify each recommendation using Google Books
             for (Map<String, String> bookInfo : extractedBooks) {
                 JsonNode verified = verifyGoogleBook(bookInfo.get("title"), bookInfo.get("author"));
                 if (verified != null) {
@@ -106,9 +117,10 @@ public class RecommendationController {
                 }
             }
 
+            // Final combined response
             Map<String, Object> response = new HashMap<>();
-            response.put("aiResponse", aiResponse);
-            response.put("items", verifiedBooks);
+            response.put("message", chatText);     // LEFT side (chat)
+            response.put("items", verifiedBooks);  // RIGHT side (recommendation cards)
 
             return objectMapper.writeValueAsString(response);
 
@@ -157,7 +169,7 @@ public class RecommendationController {
     }
 
     // -----------------------------------------------------------------------------------------
-    // Google Books Verification — volume-aware exact matching
+    // Google Books Verification — best-match selection
     // -----------------------------------------------------------------------------------------
     private JsonNode verifyGoogleBook(String title, String author) {
         try {
@@ -173,7 +185,7 @@ public class RecommendationController {
 
             String target = title.toLowerCase();
 
-            // ✅ Try to find the exact volume match
+            // Try to find the closest title match
             for (JsonNode item : json.get("items")) {
                 JsonNode info = item.get("volumeInfo");
                 if (info == null || !info.has("title")) continue;
@@ -185,7 +197,7 @@ public class RecommendationController {
                 }
             }
 
-            // Fallback: return first result
+            // Fallback: return first item
             return json.get("items").get(0);
 
         } catch (Exception e) {

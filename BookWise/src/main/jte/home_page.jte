@@ -121,11 +121,14 @@
 
         if (!message) return;
 
+        // Add user's message
         addMessage('user', message);
         input.value = '';
 
+        // Add temporary loading bubble
         addMessage('ai', '<em class="text-muted">Thinking...</em>', 'loading');
 
+        // Right panel loading UI
         document.getElementById('results').innerHTML = `
             <div class="text-center py-5">
                 <div class="spinner-border text-success"></div>
@@ -140,45 +143,46 @@
         })
             .then(res => res.json())
             .then(data => {
-                document.querySelector('.loading')?.remove();
 
-                if (data.aiResponse) {
-                    const formatted = data.aiResponse
-                        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\n/g, '<br>');
-                    addMessage('ai', formatted);
-                }
+                // Remove "Thinking..." bubble
+                const chat = document.getElementById('chatMessages');
+                chat.removeChild(chat.lastElementChild);
 
-                if (data.items && data.items.length > 0) {
-                    displayBooks(data.items);
-                } else {
-                    document.getElementById('results').innerHTML = `
-                    <div class="alert alert-warning m-3">No books found!</div>
-                `;
-                }
+                // Add AI final message
+                addMessage('ai', data.message);
+
+                // Display book results
+                displayBooks(data.items);
             })
             .catch(err => {
-                document.querySelector('.loading')?.remove();
-                addMessage('ai', 'Sorry, something went wrong!');
                 console.error(err);
             });
     }
 
-    function addMessage(sender, text, className = '') {
+    // Adds chat bubbles
+    function addMessage(sender, text, extraClass = '') {
         const chat = document.getElementById('chatMessages');
         const div = document.createElement('div');
-        div.className = `message ${sender === 'user' ? 'user-message' : 'ai-message'} ${className}`;
+
+        div.className = `message ${sender === 'user' ? 'user-message' : 'ai-message'} ${extraClass}`;
 
         if (sender === 'user') {
-            div.innerHTML = `<strong class="text-primary">You:</strong><p class="mb-0 mt-2">${text}</p>`;
+            div.innerHTML = `
+                <strong class="text-primary">You:</strong>
+                <p class="mb-0 mt-2">${text}</p>
+            `;
         } else {
-            div.innerHTML = `<strong class="text-success">📚 Librarian:</strong><div class="mt-2">${text}</div>`;
+            div.innerHTML = `
+                <strong class="text-success">📚 Librarian:</strong>
+                <div class="mt-2">${text}</div>
+            `;
         }
 
         chat.appendChild(div);
         chat.scrollTop = chat.scrollHeight;
     }
 
+    // Displays the books in the right panel
     function displayBooks(books) {
         const results = document.getElementById('results');
         results.innerHTML = '';
@@ -213,43 +217,9 @@
             `;
         });
     }
-
-    function addToLibrary(id, title, authors, thumb, desc) {
-        fetch('/api/addBook', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                id: id,
-                title: title,
-                authors: authors,
-                thumbnail: thumb,
-                description: desc
-            })
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    // Show a success alert
-                    alert('✅ Book added to your library!');
-
-                    // Also update the button that was clicked
-                    const buttons = document.querySelectorAll('button[onclick*="' + id + '"]');
-                    buttons.forEach(btn => {
-                        btn.innerHTML = '<i class="bi bi-check-circle-fill"></i><br><small>Added!</small>';
-                        btn.classList.replace('btn-success', 'btn-secondary');
-                        btn.disabled = true;
-                    });
-                } else {
-                    alert('❌ Failed to add book: ' + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('❌ Error adding book to library. Please try again.');
-            });
-    }
 </script>
 @endraw
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
