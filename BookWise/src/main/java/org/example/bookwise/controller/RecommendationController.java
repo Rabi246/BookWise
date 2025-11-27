@@ -74,12 +74,24 @@ public class RecommendationController {
                                              @RequestParam(defaultValue = "5") int count) {
         try {
             String prompt = """
-                You are a knowledgeable and friendly librarian.
-
-                User request: "%s"
-
-                Respond conversationally (3–6 sentences) with helpful book recommendations.
-                You may list the books in a natural way.
+                You are a knowledgeable and friendly librarian helping someone find books.
+                
+                User's request: "%s"
+                
+                Recommend %d books with a warm, conversational tone. For each book:
+                1. Use format: **Title** by Author Name
+                2. Explain in 1-2 sentences why you recommend it
+                3. Number your recommendations (1., 2., 3., etc.)
+                
+                Example format:
+                "I have some wonderful recommendations for you!
+                
+                1. **Pride and Prejudice** by Jane Austen – This is a timeless romance with witty dialogue and unforgettable characters. Elizabeth and Darcy's relationship develops beautifully throughout.
+                
+                2. **The Notebook** by Nicholas Sparks – A deeply emotional love story that spans decades and will have you reaching for tissues!"
+                
+                Be enthusiastic and personal, like you're talking to a friend!
+                make sure the conversation is in html formatetted with <b>,<br>,<lu>.
 
                 IMPORTANT:
                 After your conversational reply, output EXACTLY ONE JSON object on the last line ONLY.
@@ -94,7 +106,7 @@ public class RecommendationController {
 
                 The conversational text must come FIRST.
                 The JSON must come LAST and must be valid.
-            """.formatted(query);
+            """.formatted(query,count);
 
             String aiResponse = chatClient.prompt(prompt).call().content();
 
