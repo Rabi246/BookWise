@@ -3,7 +3,10 @@ package org.example.bookwise.controller;
 import org.example.bookwise.SessionStore;
 import org.example.bookwise.UserService;
 import org.example.bookwise.model.Book;
+import org.example.bookwise.model.Library;
 import org.example.bookwise.model.User;
+import org.example.bookwise.repository.LibraryRepository;
+import org.example.bookwise.repository.BookRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +14,14 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class BookController {
-
-    private final SessionStore sessionStore;
     private final UserService userService;
+    private final LibraryRepository libraryRepository;
+    private final BookRepository bookRepository;
 
-    public BookController(SessionStore sessionStore, UserService userService) {
-        this.sessionStore = sessionStore;
+    public BookController(UserService userService, LibraryRepository libraryRepository,BookRepository bookRepository) {
         this.userService = userService;
+        this.libraryRepository = libraryRepository;
+        this.bookRepository = bookRepository;
     }
 
     @GetMapping("/mybooks")
@@ -27,12 +31,13 @@ public class BookController {
             return "redirect:/login";
         }
 
-        String username = userService.findById(userId)
-                .map(User::getUsername)
-                .orElse("Guest");
+        User user = userService.findById(userId).orElse(null);
+        if (user == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("entries", libraryRepository.findByOwner(user));
 
-        model.addAttribute("username", username);
-        model.addAttribute("books", sessionStore.getMyBooks());
         return "mybooks";
     }
 
@@ -46,13 +51,32 @@ public class BookController {
      */
     @PostMapping("/api/addBook")
     @ResponseBody
-    public String addBook(@RequestBody Book book) {
-        try {
-            sessionStore.addBook(book);
-            return "{\"success\": true, \"message\": \"Book added to library\"}";
-        } catch (Exception e) {
-            return "{\"success\": false, \"message\": \"" + e.getMessage() + "\"}";
+    public String addBookToDB(@RequestBody Book requestBook, HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("currentUserId");
+        if (userId == null) {
+            return "{\"success\": false, \"message\": \"Not logged in\"}";
         }
+
+        User user = userService.findById(userId).orElse(null);
+        if (user == null) {
+            return "{\"success\": false, \"message\": \"Invalid user\"}";
+        }
+
+        // Save or find existing book
+        Book book = bookRepository.findById(requestBook.getId())
+                .orElse(requestBook);
+
+        Book saved = bookRepository.save(book);
+
+        // Create library entry
+        Library lib = new Library();
+        lib.setOwner(user);
+        lib.setBook(saved);
+
+        libraryRepository.save(lib);
+
+        return "{\"success\": true, \"message\": \"Book added to library\"}";
     }
 
     /**
@@ -60,13 +84,32 @@ public class BookController {
      */
     @PostMapping("/api/removeBook")
     @ResponseBody
-    public String removeBook(@RequestParam String bookId) {
-        try {
-            sessionStore.removeBook(bookId);
-            return "{\"success\": true, \"message\": \"Book removed from library\"}";
-        } catch (Exception e) {
-            return "{\"success\": false, \"message\": \"" + e.getMessage() + "\"}";
+    public String removeBook(@RequestParam String bookId, HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("currentUserId");
+        if (userId == null) {
+            return "{\"success\": false, \"message\": \"Not logged in\"}";
         }
+
+        User user = userService.findById(userId).orElse(null);
+        if (user == null) {
+            return "{\"success\": false, \"message\": \"Invalid user\"}";
+        }
+
+        // Find the library entry with THIS user + THIS book
+        Library entry = libraryRepository.findByOwner(user)
+                .stream()
+                .filter(e -> e.getBook().getId().equals(bookId))
+                .findFirst()
+                .orElse(null);
+
+        if (entry == null) {
+            return "{\"success\": false, \"message\": \"Book not found in library\"}";
+        }
+
+        libraryRepository.delete(entry);
+
+        return "{\"success\": true, \"message\": \"Book removed\"}";
     }
 
     /**
@@ -74,8 +117,22 @@ public class BookController {
      */
     @GetMapping("/api/hasBook")
     @ResponseBody
-    public String hasBook(@RequestParam String bookId) {
-        boolean has = sessionStore.hasBook(bookId);
+    public String hasBook(@RequestParam String bookId, HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("currentUserId");
+        if (userId == null) {
+            return "{\"hasBook\": false}";
+        }
+
+        User user = userService.findById(userId).orElse(null);
+        if (user == null) {
+            return "{\"hasBook\": false}";
+        }
+
+        boolean has = libraryRepository.findByOwner(user)
+                .stream()
+                .anyMatch(entry -> entry.getBook().getId().equals(bookId));
+
         return "{\"hasBook\": " + has + "}";
     }
 }

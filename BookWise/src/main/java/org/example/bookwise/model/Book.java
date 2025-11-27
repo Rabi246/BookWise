@@ -9,6 +9,9 @@ public class Book {
     private String title;
     private String authors;
     private String thumbnail;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     public Book() {}

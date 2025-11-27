@@ -1,5 +1,5 @@
 @param String username
-@param java.util.List<org.example.bookwise.model.Book> books
+@param java.util.List<org.example.bookwise.model.Library> entries
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,23 +51,25 @@
         <p class="text-muted">Your saved books collection</p>
     </div>
 
-    @if(books != null && !books.isEmpty())
+    @if(entries != null && !entries.isEmpty())
+
         <div class="mylibrary-page">
             <div id="library-container">
                 <!-- LEFT: covers grid -->
                 <div id="library-left">
                     <h2>My Library</h2>
                     <div class="book-grid">
-                        @for(var book : books)
+                        @for(var entry : entries)
                             <div
                                     class="book-card"
                                     onclick="showDetails(this)"
-                                    data-id="${book.getId()}"
-                                    data-name="${book.getTitle()}"
-                                    data-author="${book.getAuthors()}"
-                                    data-summary="${book.getDescription() == null ? "" : book.getDescription()}"
-                                    data-picture="${book.getThumbnail()}">
-                                <img src="${book.getThumbnail()}" class="book-cover" alt="Cover">
+                                    data-id="${entry.getBook().getId()}"
+                                    data-name="${entry.getBook().getTitle()}"
+                                    data-author="${entry.getBook().getAuthors()}"
+                                    data-summary="${entry.getBook().getDescription() == null ? "" : entry.getBook().getDescription()}"
+                                    data-picture="${entry.getBook().getThumbnail()}">
+
+                                <img src="${entry.getBook().getThumbnail()}" class="book-cover" alt="Cover">
                             </div>
                         @endfor
                     </div>
