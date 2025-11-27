@@ -4,9 +4,11 @@ import org.example.bookwise.SessionStore;
 import org.example.bookwise.UserService;
 import org.example.bookwise.model.Book;
 import org.example.bookwise.model.Library;
+import org.example.bookwise.model.Rating;
 import org.example.bookwise.model.User;
 import org.example.bookwise.repository.LibraryRepository;
 import org.example.bookwise.repository.BookRepository;
+import org.example.bookwise.repository.RatingRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +19,11 @@ public class BookController {
     private final UserService userService;
     private final LibraryRepository libraryRepository;
     private final BookRepository bookRepository;
+    private final RatingRepository ratingRepository;
 
-    public BookController(UserService userService, LibraryRepository libraryRepository,BookRepository bookRepository) {
+    public BookController(UserService userService, LibraryRepository libraryRepository,BookRepository bookRepository,
+                          RatingRepository ratingRepository) {
+        this.ratingRepository = ratingRepository;
         this.userService = userService;
         this.libraryRepository = libraryRepository;
         this.bookRepository = bookRepository;
@@ -135,4 +140,65 @@ public class BookController {
 
         return "{\"hasBook\": " + has + "}";
     }
+
+    @PostMapping("/api/rateBook")
+    @ResponseBody
+    public String rateBook(@RequestParam String bookId,
+                           @RequestParam int value,
+                           HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("currentUserId");
+        if (userId == null) {
+            return "{\"success\": false, \"message\": \"Not logged in\"}";
+        }
+
+        User user = userService.findById(userId).orElse(null);
+        if (user == null) {
+            return "{\"success\": false, \"message\": \"User not found\"}";
+        }
+
+        Book book = bookRepository.findById(bookId).orElse(null);
+        if (book == null) {
+            return "{\"success\": false, \"message\": \"Book not found\"}";
+        }
+
+        // Check if rating exists
+        Rating rating = ratingRepository.findByUserAndBook(user, book)
+                .orElse(new Rating(user, book, value));
+
+        rating.setValue(value);
+        ratingRepository.save(rating);
+
+        return "{\"success\": true}";
+    }
+
+    @GetMapping("/api/getRating")
+    @ResponseBody
+    public String getRating(@RequestParam String bookId, HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("currentUserId");
+        if (userId == null) {
+            return "{\"rating\": 0}";
+        }
+
+        User user = userService.findById(userId).orElse(null);
+        if (user == null) {
+            return "{\"rating\": 0}";
+        }
+
+        Book book = bookRepository.findById(bookId).orElse(null);
+        if (book == null) {
+            return "{\"rating\": 0}";
+        }
+
+        Rating rating = ratingRepository.findByUserAndBook(user, book)
+                .orElse(null);
+
+        if (rating == null) {
+            return "{\"rating\": 0}";
+        }
+
+        return "{\"rating\": " + rating.getValue() + "}";
+    }
+
 }

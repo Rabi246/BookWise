@@ -98,6 +98,17 @@
 
 @raw
 <script>
+
+    function highlightStars(value) {
+        document.querySelectorAll('.rating .star').forEach(function(star) {
+            if (Number(star.dataset.value) <= Number(value)) {
+                star.setAttribute('data-selected', '1');
+            } else {
+                star.removeAttribute('data-selected');
+            }
+        });
+    }
+
     function showDetails(el) {
         var data = el.dataset;
         var panel = document.getElementById('details-panel');
@@ -130,11 +141,16 @@
             + '<button onclick="removeBook(\'' + id + '\')" class="btn btn-danger mt-3">Remove From My Library</button>';
 
         content.innerHTML = html;
-        wireRatingHandlers();
-    }
 
-    function hideDetails() {
-        document.getElementById('details-panel').classList.add('hidden');
+        wireRatingHandlers();
+
+        // Load rating from DB
+        fetch('/api/getRating?bookId=' + encodeURIComponent(id))
+            .then(r => r.json())
+            .then(data => {
+                let rating = data.rating || 0;
+                highlightStars(rating);
+            });
     }
 
     function wireRatingHandlers() {
@@ -142,13 +158,26 @@
             btn.addEventListener('click', function() {
                 var value = btn.dataset.value;
                 var wrap = btn.closest('.rating');
-                wrap.querySelectorAll('.star').forEach(function(s) {
-                    if (Number(s.dataset.value) <= Number(value)) s.setAttribute('data-selected', '1');
-                    else s.removeAttribute('data-selected');
-                });
-                // TODO: POST rating to backend if needed
-            }, { once: true });
+                var bookId = wrap.dataset.book;
+
+                // update UI instantly
+                highlightStars(value);
+
+                // save to DB
+                fetch('/api/rateBook?bookId=' + encodeURIComponent(bookId) + '&value=' + value, {
+                    method: 'POST'
+                }).then(r => r.json())
+                    .then(data => {
+                        if (!data.success) {
+                            alert("Error saving rating");
+                        }
+                    });
+            });
         });
+    }
+
+    function hideDetails() {
+        document.getElementById('details-panel').classList.add('hidden');
     }
 
     function removeBook(bookId) {
@@ -162,8 +191,10 @@
             })
             .catch(function() { alert('Error removing book from library'); });
     }
+
 </script>
 @endraw
+
 
 <div class="auth-footer"><i class="bi bi-bookmark-fill"></i> BookWise.io © 2025 AI Book Recommendations.</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
