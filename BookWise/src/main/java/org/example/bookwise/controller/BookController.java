@@ -9,6 +9,7 @@ import org.example.bookwise.model.User;
 import org.example.bookwise.repository.LibraryRepository;
 import org.example.bookwise.repository.BookRepository;
 import org.example.bookwise.repository.RatingRepository;
+import org.example.bookwise.service.AiBookSummaryService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +21,12 @@ public class BookController {
     private final LibraryRepository libraryRepository;
     private final BookRepository bookRepository;
     private final RatingRepository ratingRepository;
+    private final AiBookSummaryService aiBookSummaryService;
+
 
     public BookController(UserService userService, LibraryRepository libraryRepository,BookRepository bookRepository,
-                          RatingRepository ratingRepository) {
+                          RatingRepository ratingRepository, AiBookSummaryService aiBookSummaryService) {
+        this.aiBookSummaryService = aiBookSummaryService;
         this.ratingRepository = ratingRepository;
         this.userService = userService;
         this.libraryRepository = libraryRepository;
@@ -200,5 +204,32 @@ public class BookController {
 
         return "{\"rating\": " + rating.getValue() + "}";
     }
+    /**
+     * Generate AI summary for a book
+     */
+    @GetMapping("/api/summary")
+    @ResponseBody
+    public String getSummary(@RequestParam String bookId) {
+
+        Book book = bookRepository.findById(bookId).orElse(null);
+
+        if (book == null) {
+            return "{\"success\": false, \"message\": \"Book not found\"}";
+        }
+
+        String summary = aiBookSummaryService.generateSummary(
+                book.getTitle(),
+                book.getAuthors(),
+                book.getDescription()
+        );
+
+        return """
+        {
+            "success": true,
+            "summary": "%s"
+        }
+        """.formatted(summary.replace("\"", "'").replace("\n", "\\n"));
+    }
+
 
 }

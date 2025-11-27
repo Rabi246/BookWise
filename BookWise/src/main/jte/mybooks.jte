@@ -138,7 +138,11 @@
             + '    </span>'
             + '  </div>'
             + '</div>'
-            + '<button onclick="removeBook(\'' + id + '\')" class="btn btn-danger mt-3">Remove From My Library</button>';
+            + '<button onclick="removeBook(\'' + id + '\')" class="btn btn-danger mt-3">Remove From My Library</button>'
+            + '<button onclick="generateSummary(\'' + id + '\')" class="btn btn-primary mt-3">Generate AI Summary</button>'
+            + '<div id="ai-summary" class="mt-3"></div>';
+
+
 
         content.innerHTML = html;
 
@@ -175,6 +179,23 @@
             });
         });
     }
+
+    function generateSummary(bookId) {
+        let box = document.getElementById('ai-summary');
+        box.innerHTML = "<p><em>Generating summary… ✨</em></p>";
+
+        fetch('/api/summary?bookId=' + encodeURIComponent(bookId))
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    let text = data.summary.replace(/\\n/g, '<br>');
+                    box.innerHTML = "<div class='card p-3 shadow-sm'>" + text + "</div>";
+                } else {
+                    box.innerHTML = "<p class='text-danger'>Error generating summary.</p>";
+                }
+            });
+    }
+
 
     function hideDetails() {
         document.getElementById('details-panel').classList.add('hidden');
