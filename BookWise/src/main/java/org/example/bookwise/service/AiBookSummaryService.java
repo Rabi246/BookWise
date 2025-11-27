@@ -40,4 +40,40 @@ public class AiBookSummaryService {
         Prompt p = new Prompt(new UserMessage(prompt));
         return chatClient.prompt(p).call().content();
     }
+
+    public String generateRelationshipChart(String title, String author, String description) {
+        String prompt = """
+        Create a CHARACTER RELATIONSHIP CHART for the book:
+
+        Title: %s
+        Author: %s
+        Description: "%s"
+
+        Provide:
+
+        - A list of main characters
+        - For each character: 1–2 sentence description
+        - A relationship map showing:
+            * Allies
+            * Enemies
+            * Family connections
+            * Mentor/Student
+            * Romance
+            * Rivalries
+
+        Format the output clearly using headings and arrows, like:
+
+        A -> B (relationship)
+        C <-> D (mutual relationship)
+        E --- F (family)
+        Format the *entire output in clean HTML*.
+        Use <h2>, <h3>, <p>, <ul>, <li>,<table> and <strong>.
+        Do **not** use Markdown.
+        """.formatted(title, author, description == null ? "" : description);
+
+        return chatClient.prompt(new Prompt(new UserMessage(prompt)))
+                .call()
+                .content();
+    }
+
 }

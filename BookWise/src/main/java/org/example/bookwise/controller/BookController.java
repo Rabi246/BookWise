@@ -231,5 +231,32 @@ public class BookController {
         """.formatted(summary.replace("\"", "'").replace("\n", "\\n"));
     }
 
+    /**
+     * Generate AI character relationship chart for a book
+     */
+    @GetMapping("/api/relationships")
+    @ResponseBody
+    public String generateRelationships(@RequestParam String bookId, HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("currentUserId");
+        if (userId == null) return "{\"success\": false, \"message\":\"Not logged in\"}";
+
+        var user = userService.findById(userId).orElse(null);
+        if (user == null) return "{\"success\": false, \"message\":\"Invalid user\"}";
+
+        var book = bookRepository.findById(bookId).orElse(null);
+        if (book == null) return "{\"success\": false, \"message\":\"Book not found\"}";
+
+        String chart = aiBookSummaryService.generateRelationshipChart(
+                book.getTitle(),
+                book.getAuthors(),
+                book.getDescription()
+        );
+
+        String safe = chart.replace("\"", "\\\"").replace("\n", "\\n");
+
+        return "{\"success\": true, \"chart\": \"" + safe + "\"}";
+    }
+
 
 }

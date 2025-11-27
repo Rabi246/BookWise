@@ -140,7 +140,10 @@
             + '</div>'
             + '<button onclick="removeBook(\'' + id + '\')" class="btn btn-danger mt-3">Remove From My Library</button>'
             + '<button onclick="generateSummary(\'' + id + '\')" class="btn btn-primary mt-3">Generate AI Summary</button>'
-            + '<div id="ai-summary" class="mt-3"></div>';
+            + '<div id="ai-summary" class="mt-3"></div>'
+            + '<button onclick="generateRelationships(\'' + id + '\')" class="btn btn-secondary mt-3">Character Relationship Chart</button>'
+            + '<div id="ai-relations" class="mt-3"></div>';
+
 
 
 
@@ -192,6 +195,22 @@
                     box.innerHTML = "<div class='card p-3 shadow-sm'>" + text + "</div>";
                 } else {
                     box.innerHTML = "<p class='text-danger'>Error generating summary.</p>";
+                }
+            });
+    }
+
+    function generateRelationships(bookId) {
+        let box = document.getElementById('ai-relations');
+        box.innerHTML = "<p><em>Generating character map… 🧩</em></p>";
+
+        fetch('/api/relationships?bookId=' + encodeURIComponent(bookId))
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    let html = data.chart.replace(/\\n/g, '<br>');
+                    box.innerHTML = "<div class='card p-3 shadow-sm'>" + html + "</div>";
+                } else {
+                    box.innerHTML = "<p class='text-danger'>Error generating chart.</p>";
                 }
             });
     }
