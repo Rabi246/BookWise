@@ -189,6 +189,7 @@
 
         books.forEach(book => {
             const info = book.volumeInfo;
+
             const title = info.title || "No Title";
             const authors = info.authors ? info.authors.join(", ") : "Unknown";
             const thumbnail = info.imageLinks?.thumbnail?.replace('http:', 'https:') ||
@@ -196,27 +197,63 @@
             const desc = info.description || "";
             const shortDesc = desc.length > 150 ? desc.substring(0, 150) + "..." : desc;
 
+            const safeTitle = title.replace(/'/g, "\\'");
+            const safeAuthors = authors.replace(/'/g, "\\'");
+            const safeDesc = desc.replace(/'/g, "\\'");
+
             results.innerHTML += `
-                <div class="card mb-3">
-                    <div class="row g-0">
-                        <div class="col-3">
-                            <img src="${thumbnail}" class="img-fluid rounded-start" style="height:100%; object-fit:cover;">
-                        </div>
-                        <div class="col-7 p-3">
-                            <h6 class="text-primary mb-1">${title}</h6>
-                            <p class="text-warning small mb-2">by ${authors}</p>
-                            <p class="small text-secondary mb-0">${shortDesc}</p>
-                        </div>
-                        <div class="col-2 d-flex align-items-center justify-content-center">
-                            <button class="btn btn-success" onclick="addToLibrary('${book.id}', \`${title}\`, \`${authors}\`, '${thumbnail}', \`${desc}\`)">
-                                <i class="bi bi-plus-circle"></i><br><small>Add</small>
-                            </button>
-                        </div>
+            <div class="card mb-3">
+                <div class="row g-0">
+                    <div class="col-3">
+                        <img src="${thumbnail}" class="img-fluid rounded-start" />
+                    </div>
+                    <div class="col-7 p-3">
+                        <h6 class="text-primary mb-1">${title}</h6>
+                        <p class="text-warning small mb-2">by ${authors}</p>
+                        <p class="small text-secondary mb-0">${shortDesc}</p>
+                    </div>
+                    <div class="col-2 d-flex align-items-center justify-content-center">
+                        <button class="btn btn-success"
+                            onclick="addToLibrary('${book.id}', '${safeTitle}', '${safeAuthors}', '${thumbnail}', '${safeDesc}')">
+                            <i class="bi bi-plus-circle"></i><br><small>Add</small>
+                        </button>
                     </div>
                 </div>
-            `;
+            </div>
+        `;
         });
     }
+
+    function addToLibrary(id, title, authors, thumbnail, description) {
+
+        const payload = {
+            id: id,
+            title: title,
+            authors: authors,
+            thumbnail: thumbnail,
+            description: description
+        };
+
+        fetch('/api/addBook', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Book added to your library!");
+                } else {
+                    alert("Error adding book: " + data.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Failed to add book to library.");
+            });
+    }
+
+
 </script>
 @endraw
 
