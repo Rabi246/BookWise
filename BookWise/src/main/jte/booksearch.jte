@@ -27,6 +27,7 @@
                 <li class="nav-item"><a class="nav-link active" href="/booksearch">Search</a></li>
             </ul>
 
+
             @if(username != null)
                 <div class="d-flex align-items-center">
                     <div class="dropdown">
@@ -38,6 +39,7 @@
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
                         </ul>
+
                     </div>
                 </div>
             @endif
@@ -102,22 +104,20 @@
                     const safeDescription = description.replace(/'/g, "\\'");
 
                     resultsDiv.innerHTML += `
-                    <div class="col-md-4">
-                        <div class="card shadow-sm h-100 d-flex flex-column">
-                            <img src="${img}" class="card-img-top" style="height:250px; object-fit:cover;">
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title">${title}</h5>
-                                <p class="text-muted">${authors}</p>
+                        <div class="book-card">
+                            <img src="${img}" class="book-img">
 
-                                <button class="btn btn-success mt-auto"
+                            <div class="book-info">
+                                <div class="book-title">${title}</div>
+                                <div class="book-author">${authors}</div>
+
+                                <button class="add-btn"
                                     onclick="addToLibrary('${bookId}', '${safeTitle}', '${safeAuthors}', '${img}', '${safeDescription}')">
-                                    <i class="bi bi-plus-lg"></i> Add to Library
+                                    <i class="bi bi-plus-circle"></i> Add to Library
                                 </button>
-
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
                 });
             })
             .catch(err => {
