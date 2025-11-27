@@ -142,7 +142,9 @@
             + '<button onclick="generateSummary(\'' + id + '\')" class="btn btn-primary mt-3">Generate AI Summary</button>'
             + '<div id="ai-summary" class="mt-3"></div>'
             + '<button onclick="generateRelationships(\'' + id + '\')" class="btn btn-secondary mt-3">Character Relationship Chart</button>'
-            + '<div id="ai-relations" class="mt-3"></div>';
+            + '<div id="ai-relations" class="mt-3"></div>'
+            + '<button onclick="getRecs()" class="btn btn-info mt-3">Personalized AI Recommendations</button>'
+            + '<div id="ai-recs" class="mt-3"></div>';
 
 
 
@@ -211,6 +213,22 @@
                     box.innerHTML = "<div class='card p-3 shadow-sm'>" + html + "</div>";
                 } else {
                     box.innerHTML = "<p class='text-danger'>Error generating chart.</p>";
+                }
+            });
+    }
+    function getRecs() {
+        let box = document.getElementById("ai-recs");
+        box.innerHTML = "<p><em>Finding books you'll love… 📚✨</em></p>";
+
+        fetch("/api/recommend")
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    box.innerHTML = "<div class='card p-3 shadow-sm'>" +
+                        data.recommendations.replace(/\\n/g, "<br>") +
+                        "</div>";
+                } else {
+                    box.innerHTML = "<p class='text-danger'>Error generating recommendations.</p>";
                 }
             });
     }

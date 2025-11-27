@@ -10,6 +10,7 @@ import org.example.bookwise.repository.LibraryRepository;
 import org.example.bookwise.repository.BookRepository;
 import org.example.bookwise.repository.RatingRepository;
 import org.example.bookwise.service.AiBookSummaryService;
+import org.example.bookwise.service.AiRecommendationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +23,13 @@ public class BookController {
     private final BookRepository bookRepository;
     private final RatingRepository ratingRepository;
     private final AiBookSummaryService aiBookSummaryService;
+    private final AiRecommendationService aiRecommendationService;
 
 
-    public BookController(UserService userService, LibraryRepository libraryRepository,BookRepository bookRepository,
-                          RatingRepository ratingRepository, AiBookSummaryService aiBookSummaryService) {
+    public BookController(UserService userService, LibraryRepository libraryRepository, BookRepository bookRepository,
+                          RatingRepository ratingRepository, AiBookSummaryService aiBookSummaryService,
+                          AiRecommendationService aiRecommendationService) {
+        this.aiRecommendationService = aiRecommendationService;
         this.aiBookSummaryService = aiBookSummaryService;
         this.ratingRepository = ratingRepository;
         this.userService = userService;
@@ -257,6 +261,31 @@ public class BookController {
 
         return "{\"success\": true, \"chart\": \"" + safe + "\"}";
     }
+    @GetMapping("/api/recommend")
+    @ResponseBody
+    public String recommend(HttpSession session) {
+
+        Integer userId = (Integer) session.getAttribute("currentUserId");
+        if (userId == null) return "{\"success\": false, \"message\": \"Not logged in\"}";
+
+        User user = userService.findById(userId).orElse(null);
+        if (user == null) return "{\"success\": false}";
+
+        var entries = libraryRepository.findByOwner(user);
+
+        String recs = aiRecommendationService.generateRecommendations(user, entries);
+
+        return """
+        {
+            "success": true,
+            "recommendations": "%s"
+        }
+        """.formatted(
+                recs.replace("\"", "'")
+                        .replace("\n", "\\n")
+        );
+    }
+
 
 
 }

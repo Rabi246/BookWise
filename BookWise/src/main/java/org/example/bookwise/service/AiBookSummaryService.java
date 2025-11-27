@@ -5,6 +5,7 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class AiBookSummaryService {
 
