@@ -53,9 +53,14 @@
 
     @if(entries != null && !entries.isEmpty())
 
+        <div class="text-center mb-4">
+            <button onclick="getRecsMainPage()" class="btn btn-info btn-lg">
+                Personalized AI Recommendations
+            </button>
+        </div>
+        <div id="main-page-recs-results" class="mb-4"></div>
         <div class="mylibrary-page">
             <div id="library-container">
-                <!-- LEFT: covers grid -->
                 <div id="library-left">
                     <h2>My Library</h2>
                     <div class="book-grid">
@@ -75,7 +80,6 @@
                     </div>
                 </div>
 
-                <!-- RIGHT: details panel -->
                 <div id="details-panel" class="hidden">
                     <button onclick="hideDetails()" class="close-btn" aria-label="Close">✖</button>
                     <div id="details-content">Select a book...</div>
@@ -142,11 +146,8 @@
             + '<button onclick="generateSummary(\'' + id + '\')" class="btn btn-primary mt-3">Generate AI Summary</button>'
             + '<div id="ai-summary" class="mt-3"></div>'
             + '<button onclick="generateRelationships(\'' + id + '\')" class="btn btn-secondary mt-3">Character Relationship Chart</button>'
-            + '<div id="ai-relations" class="mt-3"></div>'
-            + '<button onclick="getRecs()" class="btn btn-info mt-3">Personalized AI Recommendations</button>'
-            + '<div id="ai-recs" class="mt-3"></div>';
-
-
+            + '<div id="ai-relations" class="mt-3"></div>';
+        // Personalized AI Recommendations button is REMOVED from here.
 
 
         content.innerHTML = html;
@@ -216,23 +217,57 @@
                 }
             });
     }
-    function getRecs() {
-        let box = document.getElementById("ai-recs");
-        box.innerHTML = "<p><em>Finding books you'll love… 📚✨</em></p>";
+
+    function getRecsMainPage() {
+        let box = document.getElementById("main-page-recs-results");
+        box.innerHTML = "<div class='text-center'><p><em>Finding books you'll love… 📚✨</em></p></div>";
 
         fetch("/api/recommend")
             .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    box.innerHTML = "<div class='card p-3 shadow-sm'>" +
-                        data.recommendations.replace(/\\n/g, "<br>") +
-                        "</div>";
+                    // Replace line breaks with a unique, temporary marker
+                    let recsText = data.recommendations.replace(/\\n/g, '@@LINE_BREAK@@');
+
+                    // 1. Look for the "Confidence score: XX" line
+                    const scoreRegex = /(Confidence score:)\s*(\d+)/;
+                    const scoreMatch = recsText.match(scoreRegex);
+
+                    // 2. Look for the "Similar books: ..." line
+                    const similarBooksRegex = /(Similar books:\s*[^@]*)/;
+                    const similarBooksMatch = recsText.match(similarBooksRegex);
+
+                    let recsHtml = recsText;
+
+                    if (scoreMatch && similarBooksMatch) {
+                        const scoreLabel = scoreMatch[1]; // "Confidence score:"
+                        const scoreValue = scoreMatch[2]; // "95"
+                        const similarBooksLine = similarBooksMatch[0];
+
+                        // A. Remove the old score line from the text
+                        recsHtml = recsHtml.replace(scoreMatch[0], '');
+
+                        // B. Construct the new flex-based HTML structure
+                        // The structure groups the similar books line, the score label, and the score value.
+                        const newScoreLine =
+                            '<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; flex-wrap: wrap;">' +
+                            '<span>' + similarBooksLine + '</span>' +
+                            '<span style="font-weight: bold; white-space: nowrap;">' + scoreLabel + ' ' + scoreValue + '</span>' +
+                            '</div>';
+
+                        // C. Replace the original similar books line with the new, structured block
+                        recsHtml = recsHtml.replace(similarBooksLine, newScoreLine);
+                    }
+
+                    // Revert temporary markers to HTML line breaks
+                    recsHtml = recsHtml.replace(/@@LINE_BREAK@@/g, '<br>');
+
+                    box.innerHTML = "<div class='card p-4 shadow-lg'>" + recsHtml + "</div>";
                 } else {
                     box.innerHTML = "<p class='text-danger'>Error generating recommendations.</p>";
                 }
             });
     }
-
 
     function hideDetails() {
         document.getElementById('details-panel').classList.add('hidden');
