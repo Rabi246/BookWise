@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/mybooks.css"><!-- scoped styles for this page -->
+    <link rel="stylesheet" href="/css/mybooks.css">
 </head>
 
 <body class="bg-light">
@@ -46,23 +46,25 @@
 </nav>
 
 <div class="container-fluid px-4 page-content">
-    <div class="text-center mb-4">
-        <h2 class="fw-bold">📘 My Library</h2>
-        <p class="text-muted">Your saved books collection</p>
-    </div>
-
     @if(entries != null && !entries.isEmpty())
 
-        <div class="text-center mb-4">
-            <button onclick="getRecsMainPage()" class="btn btn-info btn-lg">
-                Personalized AI Recommendations
+        <!-- Header with title on left, button on right -->
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div style="flex: 1; text-align: center;">
+                <h2 class="fw-bold mb-1">📘 My Library</h2>
+                <p class="text-muted mb-0">Your saved books collection</p>
+            </div>
+            <button onclick="getRecsMainPage()" class="btn btn-info" style="position: absolute; right: 20px;">
+                <i class="bi bi-stars"></i> Personalized AI Recommendations
             </button>
         </div>
-        <div id="main-page-recs-results" class="mb-4"></div>
+
+        <!-- Recommendations results area - REMOVED, now shows in side panel -->
+
+        <!-- Library grid -->
         <div class="mylibrary-page">
             <div id="library-container">
                 <div id="library-left">
-                    <h2>My Library</h2>
                     <div class="book-grid">
                         @for(var entry : entries)
                             <div
@@ -87,6 +89,10 @@
             </div>
         </div>
     @else
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">📘 My Library</h2>
+            <p class="text-muted">Your saved books collection</p>
+        </div>
         <div class="card shadow-sm mt-4">
             <div class="card-body text-center py-5">
                 <i class="bi bi-book text-secondary" style="font-size: 4rem;"></i>
@@ -147,14 +153,11 @@
             + '<div id="ai-summary" class="mt-3"></div>'
             + '<button onclick="generateRelationships(\'' + id + '\')" class="btn btn-secondary mt-3">Character Relationship Chart</button>'
             + '<div id="ai-relations" class="mt-3"></div>';
-        // Personalized AI Recommendations button is REMOVED from here.
-
 
         content.innerHTML = html;
 
         wireRatingHandlers();
 
-        // Load rating from DB
         fetch('/api/getRating?bookId=' + encodeURIComponent(id))
             .then(r => r.json())
             .then(data => {
@@ -170,10 +173,8 @@
                 var wrap = btn.closest('.rating');
                 var bookId = wrap.dataset.book;
 
-                // update UI instantly
                 highlightStars(value);
 
-                // save to DB
                 fetch('/api/rateBook?bookId=' + encodeURIComponent(bookId) + '&value=' + value, {
                     method: 'POST'
                 }).then(r => r.json())
@@ -219,53 +220,34 @@
     }
 
     function getRecsMainPage() {
-        let box = document.getElementById("main-page-recs-results");
-        box.innerHTML = "<div class='text-center'><p><em>Finding books you'll love… 📚✨</em></p></div>";
+        // Show the side panel
+        let panel = document.getElementById('details-panel');
+        let content = document.getElementById('details-content');
+        panel.classList.remove('hidden');
+
+        content.innerHTML = '<h2>📚 Personalized Recommendations</h2><p><em>Finding books you\'ll love… 📚✨</em></p>';
 
         fetch("/api/recommend")
             .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    // Replace line breaks with a unique, temporary marker
-                    let recsText = data.recommendations.replace(/\\n/g, '@@LINE_BREAK@@');
+                    let recsText = data.recommendations.replace(/\\n/g, '<br>');
 
-                    // 1. Look for the "Confidence score: XX" line
-                    const scoreRegex = /(Confidence score:)\s*(\d+)/;
-                    const scoreMatch = recsText.match(scoreRegex);
+                    // Remove the duplicate "Personalized Book Recommendations" heading from API response
+                    recsText = recsText.replace(/<h2>Personalized Book Recommendations<\/h2>/gi, '');
+                    recsText = recsText.replace(/Personalized Book Recommendations<br>/gi, '');
 
-                    // 2. Look for the "Similar books: ..." line
-                    const similarBooksRegex = /(Similar books:\s*[^@]*)/;
-                    const similarBooksMatch = recsText.match(similarBooksRegex);
-
-                    let recsHtml = recsText;
-
-                    if (scoreMatch && similarBooksMatch) {
-                        const scoreLabel = scoreMatch[1]; // "Confidence score:"
-                        const scoreValue = scoreMatch[2]; // "95"
-                        const similarBooksLine = similarBooksMatch[0];
-
-                        // A. Remove the old score line from the text
-                        recsHtml = recsHtml.replace(scoreMatch[0], '');
-
-                        // B. Construct the new flex-based HTML structure
-                        // The structure groups the similar books line, the score label, and the score value.
-                        const newScoreLine =
-                            '<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; flex-wrap: wrap;">' +
-                            '<span>' + similarBooksLine + '</span>' +
-                            '<span style="font-weight: bold; white-space: nowrap;">' + scoreLabel + ' ' + scoreValue + '</span>' +
-                            '</div>';
-
-                        // C. Replace the original similar books line with the new, structured block
-                        recsHtml = recsHtml.replace(similarBooksLine, newScoreLine);
-                    }
-
-                    // Revert temporary markers to HTML line breaks
-                    recsHtml = recsHtml.replace(/@@LINE_BREAK@@/g, '<br>');
-
-                    box.innerHTML = "<div class='card p-4 shadow-lg'>" + recsHtml + "</div>";
+                    content.innerHTML = '<h2 style="margin-bottom: 20px;">📚 Personalized Recommendations</h2>' +
+                        '<div style="overflow-y: auto; max-height: calc(100vh - 150px);">' +
+                        recsText +
+                        '</div>';
                 } else {
-                    box.innerHTML = "<p class='text-danger'>Error generating recommendations.</p>";
+                    content.innerHTML = '<h2>📚 Personalized Recommendations</h2><p class="text-danger">Error generating recommendations.</p>';
                 }
+            })
+            .catch(err => {
+                console.error(err);
+                content.innerHTML = '<h2>📚 Personalized Recommendations</h2><p class="text-danger">Error fetching recommendations.</p>';
             });
     }
 
@@ -287,7 +269,6 @@
 
 </script>
 @endraw
-
 
 <div class="auth-footer"><i class="bi bi-bookmark-fill"></i> BookWise.io © 2025 AI Book Recommendations.</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
