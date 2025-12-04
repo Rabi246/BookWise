@@ -212,7 +212,7 @@
             .then(data => {
                 if (data.success) {
                     let html = data.chart.replace(/\\n/g, '<br>');
-                    box.innerHTML = "<div class='card p-3 shadow-sm'>" + html + "</div>";
+                    box.innerHTML = "<div class='card p-3 shadow-sm'>" + html+ "</div>";
                 } else {
                     box.innerHTML = "<p class='text-danger'>Error generating chart.</p>";
                 }
@@ -225,7 +225,7 @@
         let content = document.getElementById('details-content');
         panel.classList.remove('hidden');
 
-        content.innerHTML = '<h2>📚 Personalized Recommendations</h2><p><em>Finding books you\'ll love… 📚✨</em></p>';
+        content.innerHTML = '<h2> Personalized Recommendations</h2><p><em>Finding books you\'ll love… </em></p>';
 
         fetch("/api/recommend")
             .then(r => r.json())
