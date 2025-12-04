@@ -45,7 +45,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container-fluid px-4 page-content">
-        <a class="navbar-brand" href="/home_page">📚 BookWise</a>
+        <a class="navbar-brand" href="/home_page"> BookWise</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -79,7 +79,7 @@
                 <div class="card-body p-0">
                     <div class="chat-messages" id="chatMessages">
                         <div class="message ai-message">
-                            <strong class="text-success">📚 Librarian:</strong>
+                            <strong class="text-success"> Librarian:</strong>
                             <p class="mb-0 mt-2">Hello! What are you feeling like reading today?</p>
                         </div>
                     </div>
@@ -175,7 +175,7 @@
             `;
         } else {
             div.innerHTML = `
-                <strong class="text-success">📚 Librarian:</strong>
+                <strong class="text-success"> Librarian:</strong>
                 <div class="mt-2">${text}</div>
             `;
         }

@@ -14,7 +14,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/home_page">📚 BookWise</a>
+        <a class="navbar-brand" href="/home_page"> BookWise</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -50,7 +50,7 @@
 
 
 <div class="container-fluid px-4 page-content">
-    <h2 class="mb-3 fw-bold">🔎 Google Books Search</h2>
+    <h2 class="mb-3 fw-bold"> Google Books Search</h2>
 
     <div class="input-group mb-3">
         <input id="searchBox" type="text" class="form-control" placeholder="Search for a book...">

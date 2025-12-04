@@ -14,7 +14,7 @@
 <body class="bg-light">
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/home_page">📚 BookWise</a>
+        <a class="navbar-brand" href="/home_page"> BookWise</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -51,7 +51,7 @@
         <!-- Header with title on left, button on right -->
         <div class="d-flex justify-content-between align-items-start mb-4">
             <div style="flex: 1; text-align: center;">
-                <h2 class="fw-bold mb-1">📘 My Library</h2>
+                <h2 class="fw-bold mb-1"> My Library</h2>
                 <p class="text-muted mb-0">Your saved books collection</p>
             </div>
             <button onclick="getRecsMainPage()" class="btn btn-info" style="position: absolute; right: 20px;">
@@ -90,7 +90,7 @@
         </div>
     @else
         <div class="text-center mb-4">
-            <h2 class="fw-bold">📘 My Library</h2>
+            <h2 class="fw-bold"> My Library</h2>
             <p class="text-muted">Your saved books collection</p>
         </div>
         <div class="card shadow-sm mt-4">
@@ -189,7 +189,7 @@
 
     function generateSummary(bookId) {
         let box = document.getElementById('ai-summary');
-        box.innerHTML = "<p><em>Generating summary… ✨</em></p>";
+        box.innerHTML = "<p><em>Generating summary… </em></p>";
 
         fetch('/api/summary?bookId=' + encodeURIComponent(bookId))
             .then(res => res.json())
@@ -205,7 +205,7 @@
 
     function generateRelationships(bookId) {
         let box = document.getElementById('ai-relations');
-        box.innerHTML = "<p><em>Generating character map… 🧩</em></p>";
+        box.innerHTML = "<p><em>Generating character map… </em></p>";
 
         fetch('/api/relationships?bookId=' + encodeURIComponent(bookId))
             .then(res => res.json())
@@ -237,17 +237,17 @@
                     recsText = recsText.replace(/<h2>Personalized Book Recommendations<\/h2>/gi, '');
                     recsText = recsText.replace(/Personalized Book Recommendations<br>/gi, '');
 
-                    content.innerHTML = '<h2 style="margin-bottom: 20px;">📚 Personalized Recommendations</h2>' +
+                    content.innerHTML = '<h2 style="margin-bottom: 20px;"> Personalized Recommendations</h2>' +
                         '<div style="overflow-y: auto; max-height: calc(100vh - 150px);">' +
                         recsText +
                         '</div>';
                 } else {
-                    content.innerHTML = '<h2>📚 Personalized Recommendations</h2><p class="text-danger">Error generating recommendations.</p>';
+                    content.innerHTML = '<h2> Personalized Recommendations</h2><p class="text-danger">Error generating recommendations.</p>';
                 }
             })
             .catch(err => {
                 console.error(err);
-                content.innerHTML = '<h2>📚 Personalized Recommendations</h2><p class="text-danger">Error fetching recommendations.</p>';
+                content.innerHTML = '<h2> Personalized Recommendations</h2><p class="text-danger">Error fetching recommendations.</p>';
             });
     }
 
