@@ -14,9 +14,17 @@ Built as a team project for **CS 3220 (Web & Internet Programming)** at Cal Stat
 - **Personal library**: add and remove books from your own "My Books" shelf, saved to a MySQL database
 - **Ratings**: rate the books in your library
 - **AI librarian chat**: describe what you're in the mood for and get conversational recommendations, with matching book cards pulled from Google Books
+ <img width="926" height="463" alt="Screenshot 2026-10-24 151719" src="https://github.com/user-attachments/assets/f5b21d20-da50-445d-93cd-6e406d52eaba" />
+
 - **Personalized recommendations**: analyzes your saved books and suggests new reads, each with an explanation and a confidence score
+ <img width="944" height="455" alt="Screenshot 2026-10-24 152605" src="https://github.com/user-attachments/assets/f7d302b1-8e5b-4743-a0b3-321ef917ead2" />
+ 
 - **AI book summaries**: spoiler-free overviews of any book
+ <img width="587" height="469" alt="Screenshot 2026-10-24 160107" src="https://github.com/user-attachments/assets/819e3c99-87b0-4d10-b4eb-5f12694ae61b" />
+ 
 - **Character relationships**: AI-generated breakdowns of how the main characters connect
+ <img width="568" height="418" alt="Screenshot 2026-10-24 160220" src="https://github.com/user-attachments/assets/ea2136a2-f320-46ff-8f77-b8649cee098a" />
+
 - **Accounts**: register, log in/out, and password reset flow
 
 ## Tech Stack
