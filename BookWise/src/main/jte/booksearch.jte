@@ -72,9 +72,7 @@
         resultsDiv.innerHTML =
             '<div class="text-center mt-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Searching...</p></div>';
 
-        // NOTE: This fetch still calls the Google API directly as per your previous choice.
-        // If you were using the Spring Boot backend, the URL would be: `/api/searchBooks?q=${encodeURIComponent(q)}`
-        fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=20`)
+             fetch(`/api/searchBooks?q=${encodeURIComponent(q)}`)
             .then(res => res.json())
             .then(data => {
                 resultsDiv.innerHTML = "";

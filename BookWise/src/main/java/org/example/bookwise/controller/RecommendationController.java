@@ -1,11 +1,13 @@
 package org.example.bookwise.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.net.URI;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +19,8 @@ public class RecommendationController {
     private final ChatClient chatClient;
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    @Value("${google.books.api-key:}")
+    private String googleApiKey;
 
     public RecommendationController(ChatClient.Builder chatClientBuilder) {
         this.chatClient = chatClientBuilder.build();
@@ -119,6 +123,7 @@ public class RecommendationController {
 
             // Extract book list from JSON
             List<Map<String, String>> extractedBooks = extractList(jsonText);
+            System.out.println("[AI] Parsed " + extractedBooks.size() + " books from AI response");
             List<JsonNode> verifiedBooks = new ArrayList<>();
 
             // Verify each recommendation using Google Books
@@ -185,34 +190,38 @@ public class RecommendationController {
     // -----------------------------------------------------------------------------------------
     private JsonNode verifyGoogleBook(String title, String author) {
         try {
-            String q = "intitle:%s+inauthor:%s".formatted(
-                    URLEncoder.encode(title, StandardCharsets.UTF_8),
-                    URLEncoder.encode(author, StandardCharsets.UTF_8)
-            );
+            // Search by title, with the first author as a loose hint (not a strict filter)
+            String firstAuthor = author.split(",| and ")[0].trim();
+            String q = "intitle:" + title + " " + firstAuthor;
 
-            String url = "https://www.googleapis.com/books/v1/volumes?q=" + q;
-            JsonNode json = objectMapper.readTree(restTemplate.getForObject(url, String.class));
+            String url = "https://www.googleapis.com/books/v1/volumes?q="
+                    + URLEncoder.encode(q, StandardCharsets.UTF_8)
+                    + "&country=US&maxResults=10";
+            if (!googleApiKey.isBlank()) {
+                url += "&key=" + googleApiKey;
+            }
 
-            if (!json.has("items")) return null;
+            // URI.create stops RestTemplate from encoding the URL a second time
+            JsonNode json = objectMapper.readTree(restTemplate.getForObject(URI.create(url), String.class));
+
+            if (!json.has("items")) {
+                System.out.println("[GoogleBooks] No results for: " + title + " by " + author
+                        + " (totalItems=" + json.path("totalItems").asInt() + ")");
+                return null;
+            }
 
             String target = title.toLowerCase();
-
-            // Try to find the closest title match
             for (JsonNode item : json.get("items")) {
                 JsonNode info = item.get("volumeInfo");
                 if (info == null || !info.has("title")) continue;
-
-                String resultTitle = info.get("title").asText("").toLowerCase();
-
-                if (resultTitle.contains(target)) {
+                if (info.get("title").asText("").toLowerCase().contains(target)) {
                     return item;
                 }
             }
-
-            // Fallback: return first item
             return json.get("items").get(0);
 
         } catch (Exception e) {
+            System.out.println("[GoogleBooks] Lookup failed for '" + title + "': " + e.getMessage());
             return null;
         }
     }
